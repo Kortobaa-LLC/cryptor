@@ -9,8 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  crypto: ^2.1.4
-  steel_crypt: ^2.0.0
+  crypto: ^2.1.5
+  steel_crypt: ^2.2.2+1
 
 dev_dependencies:
   flutter_test:

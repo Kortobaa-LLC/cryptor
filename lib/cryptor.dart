@@ -18,7 +18,7 @@ class Cryptor {
 
   /// Hashes passed [value] with sha512 algorithm
   static String hash(String value) {
-    return base64.encode(sha512.convert(utf8.encode(value)).bytes);
+    return String.fromCharCodes(sha512.convert(value.codeUnits).bytes);
   }
 
   /// Encrypts passed [cleartext] with key generated based on [password] argument
@@ -28,15 +28,16 @@ class Cryptor {
     Uint8List key = _pbkdf2(password, salt);
 
     String ciphertext = AesGcm(key).encrypt(cleartext, iv);
-    return base64.encode(_combineInputs(salt, iv, _generateTag(), ciphertext));
+    return String.fromCharCodes(
+        _combineInputs(salt, iv, _generateTag(), ciphertext));
   }
 
   /// Encrypts passed [cryptedtext] with key generated based on [password] argument
   static String decrypt(String cryptedtext, String password) {
-    Uint8List bytes = base64.decode(cryptedtext);
+    Uint8List bytes = Uint8List.fromList(cryptedtext.codeUnits);
     Uint8List salt = bytes.sublist(0, SALT_LENGTH);
     Uint8List iv = bytes.sublist(SALT_LENGTH, SALT_LENGTH + IV_LENGTH);
-    String ciphertext = base64.encode(
+    String ciphertext = String.fromCharCodes(
         bytes.sublist(SALT_LENGTH + IV_LENGTH + TAG_LENGTH, bytes.length));
     Uint8List key = _pbkdf2(password, salt);
     return AesGcm(key).decrypt(ciphertext, iv);
@@ -44,7 +45,7 @@ class Cryptor {
 
   static Uint8List _combineInputs(
       Uint8List salt, Uint8List iv, Uint8List tag, String ciphertext) {
-    return Uint8List.fromList(salt + iv + tag + base64.decode(ciphertext));
+    return Uint8List.fromList(salt + iv + tag + ciphertext.codeUnits);
   }
 
   /// Password Based Key Deriviation function
